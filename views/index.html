@@ -69,11 +69,6 @@
       margin-top: 20px;
     }
 
-    table, th, td {
-      border: 1px solid #ccc;
-      padding: 8px;
-      text-align: left;
-    }
     /* Styling for the table that displays user data */
 .user-data {
   margin-top: 20px;
@@ -112,6 +107,12 @@
   background-color: #e0e0e0;
 }
 
+
+    table, th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      text-align: left;
+    }
 
     #userData {
       margin-top: 20px;
@@ -184,6 +185,8 @@
     <input type="email" id="formEmail" placeholder="Email" required>
     <button type="submit">Join</button>
   </form>
+  <button type="button" id="homeButton" style="display: none;">Home</button>
+
 
   <div id="userData" class="user-data"></div>
   <ul id="liveUsers"></ul>
@@ -198,6 +201,47 @@
     $('#userForm').hide();
     $('#createUserForm').submit(function (event) {
       event.preventDefault();
+
+      // Additional JavaScript Validation
+      let isValid = true;
+        let errorMessage = '';
+
+        if (!$('#firstName').val().match(/^[A-Za-z\s]+$/)) {
+          isValid = false;
+          errorMessage += 'First Name can only contain alphabets.\n';
+        }
+        if (!$('#lastName').val().match(/^[A-Za-z\s]+$/)) {
+          isValid = false;
+          errorMessage += 'Last Name can only contain alphabets.\n';
+        }
+        if (!$('#mobileNo').val().match(/^\d{10}$/)) {
+          isValid = false;
+          errorMessage += 'Mobile Number must be a 10 digit number.\n';
+        }
+        if (!$('#email').val().match(/^\S+@\S+\.\S+$/)) {
+          isValid = false;
+          errorMessage += 'Email is not valid.\n';
+        }
+     
+        if (!$('#loginId').val().match(/^[a-zA-Z0-9]+$/)) {
+      isValid = false;
+      errorMessage += 'Login ID can only contain alphanumeric characters.\n';
+    }
+
+    if ($('#loginId').val().length < 6) {
+      isValid = false;
+      errorMessage += 'Login ID must be at least 6 characters long.\n';
+    }
+    const password = $('#password').val();
+    const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
+    if (!password.match(passwordRegex)) {
+      isValid = false;
+      errorMessage += 'Password must be at least 6 characters long and contain at least one lowercase letter, one uppercase letter, one number, and one special character @$!%*?&.\n';
+    }
+        if (!isValid) {
+          alert(errorMessage);
+          return;
+        }
 
       const formData = {
         firstName: $('#firstName').val(),
@@ -231,13 +275,15 @@
       });
     });
 
+  
+
     $('#showData').on('click', function () {
       $.ajax({
         url: '/server/display_data',
         //url: 'http://localhost:3003/server/display_data',
         method: 'GET',
         success: function (response) {
-          let table = '<h2>User Data</h2><table><tr><th>First Name</th><th>Last Name</th><th>Mobile No</th><th>Email</th><th>Street</th><th>City</th><th>State</th><th>Country</th><th>Login ID</th></tr>';
+          let table = '<h2>User Data</h2><table><tr><th>First Name</th><th>Last Name</th><th>Mobile No</th><th>Email</th><th>Street</th><th>City</th><th>State</th><th>Country</th><th>Login ID</th></tr>'
           response.forEach(user => {
             table += `<tr>
                           <td>${user.firstName}</td>
@@ -364,6 +410,10 @@
 
           // Hide the form and display user details
           $('#userForm').hide();
+          $('#homeButton').show();
+          $('#homeButton').on('click', function () {
+    window.location.href = '/index.html'; // Adjust the URL to match your home page route
+  });
           // Listen for updated live users list
           socket.on('updated-live-users', function (liveUsers) {
             // Display details of all live users
