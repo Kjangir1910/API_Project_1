@@ -223,14 +223,9 @@
           errorMessage += 'Email is not valid.\n';
         }
      
-        if (!$('#loginId').val().match(/^[a-zA-Z0-9]+$/)) {
+        if (!$('#loginId').val().match(/^[a-zA-Z0-9]{8,}$/)) {
       isValid = false;
-      errorMessage += 'Login ID can only contain alphanumeric characters.\n';
-    }
-
-    if ($('#loginId').val().length < 6) {
-      isValid = false;
-      errorMessage += 'Login ID must be at least 6 characters long.\n';
+      errorMessage += 'Login ID must be at least 8 characters long and contain only alphanumeric characters.\n';
     }
     const password = $('#password').val();
     const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/;
